@@ -56,6 +56,7 @@ Final Answer: {"is_attack": true/false, "confidence": 0-100, "attack_type": "具
                 )
 
                 agent_reply = response.choices[0].message.content.strip()
+                logger.info(f"[Agent] Step {step+1} 思考结果:\n{agent_reply}\n")
                 context += f"\n{agent_reply}\n"
 
                 # 判断是否得到最终结论 
