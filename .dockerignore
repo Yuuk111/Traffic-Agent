@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+# 本地虚拟环境
+venv/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+
+# 日志文件
+*.log
