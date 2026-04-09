@@ -31,7 +31,8 @@ class LogAnalyzerServicer(insight_pb2_grpc.LogAnalyserServicer): # 继承 grpc�
                     "source_ip": log_item.source_ip,
                     "method": log_item.method,
                     "path": log_item.path,
-                    "payload": log_item.payload
+                    "payload": log_item.payload,
+                    "query": log_item.query
                 }
                 # 将日志数据放入队列，供后续分析使用
                 await self.log_queue.put(log_data) 

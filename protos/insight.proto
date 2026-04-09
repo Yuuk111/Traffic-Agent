@@ -14,6 +14,7 @@ message LogItem {
     string path = 5;
     string payload = 6; // HTTP Body or Header 中的可疑数据
     int32 timestamp = 7; // Unix时间戳
+    string query = 8; // URL查询参数 
 }
 
 message AnalysisSummary {

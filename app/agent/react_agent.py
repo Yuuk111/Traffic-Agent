@@ -14,6 +14,7 @@ class SecurityReActAgent:
         # 初始化 OpenAI 客户端
         self.client = AsyncOpenAI(api_key=api_key, base_url=base_url)
         self.model_name = model_name
+        # 可选的前端事件存储器，用于把模型响应同步展示到页面上。
         self.response_store = response_store
         # 注册工具箱
         self.tools ={
@@ -61,6 +62,7 @@ Final Answer: {"is_attack": true/false, "confidence": 0-100, "attack_type": "具
                 logger.info(f"[Agent] Step {step+1} 思考结果:\n{agent_reply}\n")
 
                 if self.response_store is not None:
+                    # 每次大模型返回后，立刻发布到前端页面，而不是等最终结论。
                     await self.response_store.add_event(
                         build_response_event(
                             trace_id=log_data.get("trace_id", ""),

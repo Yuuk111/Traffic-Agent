@@ -49,11 +49,13 @@ async def serve():
     base_url = os.getenv("OPENAI_API_BASE_URL","https://api.deepseek.com/v1")
     model_name = os.getenv("OPENAI_MODEL_NAME","deepseek-chat")
 
+    # 这个 store 是 Agent 和前端页面之间的“共享桥梁”。
     response_store = ResponseEventStore(max_items=100)
     security_agent = SecurityReActAgent(api_key, base_url, model_name, response_store=response_store)
 
     log_queue = asyncio.Queue(maxsize=1000)
     consumer_task = asyncio.create_task(agent_consumer_worker(log_queue, security_agent))
+    # 在同一个进程中额外启动一个 HTTP 服务，提供页面和 SSE 推送。
     dashboard_runner = await start_dashboard(response_store=response_store, port=50052)
     logger.info("[Main] 前端页面正在 http://0.0.0.0:50052 上监听...")
 
@@ -69,10 +71,19 @@ async def serve():
         await grpc_server.start()
         await grpc_server.wait_for_termination()
     finally:
+        # 收到 Ctrl+C 等终止信号后，先立刻停止 gRPC 服务，避免继续接收新请求。
+        await grpc_server.stop(grace=0)
+
+        # 主动取消后台消费者协程，让它从 queue.get() 等待中尽快退出。
         consumer_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await consumer_task
+
+        # 关闭 aiohttp 前端服务和现有 SSE 连接。
         await dashboard_runner.cleanup()
+
+        # 关闭大模型客户端底层的 HTTP 连接，避免事件循环等待网络资源回收。
+        await security_agent.client.close()
 
 if __name__ == "__main__":
     asyncio.run(serve())

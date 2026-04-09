@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rinsight.proto\x12\x07insight\"\x88\x01\n\x07LogItem\x12\x10\n\x08trace_id\x18\x01 \x01(\t\x12\x11\n\tsource_ip\x18\x02 \x01(\t\x12\x16\n\x0e\x64\x65stination_ip\x18\x03 \x01(\t\x12\x0e\n\x06method\x18\x04 \x01(\t\x12\x0c\n\x04path\x18\x05 \x01(\t\x12\x0f\n\x07payload\x18\x06 \x01(\t\x12\x11\n\ttimestamp\x18\x07 \x01(\x05\":\n\x0f\x41nalysisSummary\x12\x17\n\x0fprocessed_count\x18\x01 \x01(\x05\x12\x0e\n\x06status\x18\x02 \x01(\t2I\n\x0bLogAnalyser\x12:\n\nStreamLogs\x12\x10.insight.LogItem\x1a\x18.insight.AnalysisSummary(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rinsight.proto\x12\x07insight\"\x97\x01\n\x07LogItem\x12\x10\n\x08trace_id\x18\x01 \x01(\t\x12\x11\n\tsource_ip\x18\x02 \x01(\t\x12\x16\n\x0e\x64\x65stination_ip\x18\x03 \x01(\t\x12\x0e\n\x06method\x18\x04 \x01(\t\x12\x0c\n\x04path\x18\x05 \x01(\t\x12\x0f\n\x07payload\x18\x06 \x01(\t\x12\x11\n\ttimestamp\x18\x07 \x01(\x05\x12\r\n\x05query\x18\x08 \x01(\t\":\n\x0f\x41nalysisSummary\x12\x17\n\x0fprocessed_count\x18\x01 \x01(\x05\x12\x0e\n\x06status\x18\x02 \x01(\t2I\n\x0bLogAnalyser\x12:\n\nStreamLogs\x12\x10.insight.LogItem\x1a\x18.insight.AnalysisSummary(\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,9 +32,9 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'insight_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_LOGITEM']._serialized_start=27
-  _globals['_LOGITEM']._serialized_end=163
-  _globals['_ANALYSISSUMMARY']._serialized_start=165
-  _globals['_ANALYSISSUMMARY']._serialized_end=223
-  _globals['_LOGANALYSER']._serialized_start=225
-  _globals['_LOGANALYSER']._serialized_end=298
+  _globals['_LOGITEM']._serialized_end=178
+  _globals['_ANALYSISSUMMARY']._serialized_start=180
+  _globals['_ANALYSISSUMMARY']._serialized_end=238
+  _globals['_LOGANALYSER']._serialized_start=240
+  _globals['_LOGANALYSER']._serialized_end=313
 # @@protoc_insertion_point(module_scope)
