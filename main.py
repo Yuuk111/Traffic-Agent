@@ -2,11 +2,13 @@ import sys
 import asyncio
 import logging
 import os
+import contextlib
 from grpc import aio
 from pathlib import Path
 
 # 引入 Agent
 from app.agent.react_agent import SecurityReActAgent
+from app.web.dashboard import ResponseEventStore, start_dashboard
 # 引入 gRPC Servicer
 pb2_path = str(Path(__file__).parent / "app" / "grpc_server" / "pb2")
 if pb2_path not in sys.path:
@@ -47,10 +49,13 @@ async def serve():
     base_url = os.getenv("OPENAI_API_BASE_URL","https://api.deepseek.com/v1")
     model_name = os.getenv("OPENAI_MODEL_NAME","deepseek-chat")
 
-    security_agent = SecurityReActAgent(api_key, base_url, model_name)
+    response_store = ResponseEventStore(max_items=100)
+    security_agent = SecurityReActAgent(api_key, base_url, model_name, response_store=response_store)
 
     log_queue = asyncio.Queue(maxsize=1000)
     consumer_task = asyncio.create_task(agent_consumer_worker(log_queue, security_agent))
+    dashboard_runner = await start_dashboard(response_store=response_store, port=50052)
+    logger.info("[Main] 前端页面正在 http://0.0.0.0:50052 上监听...")
 
     grpc_server = aio.server()
     servicer = LogAnalyzerServicer(log_queue=log_queue)
@@ -60,8 +65,14 @@ async def serve():
     grpc_server.add_insecure_port(grpc_listen_addr)
     logger.info(f"[Main] gRPC 服务器正在 {grpc_listen_addr} 上监听...")
     
-    await grpc_server.start()
-    await grpc_server.wait_for_termination()
+    try:
+        await grpc_server.start()
+        await grpc_server.wait_for_termination()
+    finally:
+        consumer_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await consumer_task
+        await dashboard_runner.cleanup()
 
 if __name__ == "__main__":
     asyncio.run(serve())

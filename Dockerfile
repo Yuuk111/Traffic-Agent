@@ -28,6 +28,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . .
 
-EXPOSE 50051
+EXPOSE 50051 50052
 
 CMD  ["python", "main.py"]

@@ -3,16 +3,18 @@ import re
 import json
 import logging
 from openai import AsyncOpenAI
+from app.web.dashboard import build_response_event
 
 # from app.tools.threat_intel import check_ioc
 logger = logging.getLogger(__name__)
 
 class SecurityReActAgent:
     """"基于 ReAct 框架的安全分析 Agent"""
-    def __init__(self, api_key: str, base_url: str, model_name: str):
+    def __init__(self, api_key: str, base_url: str, model_name: str, response_store=None):
         # 初始化 OpenAI 客户端
         self.client = AsyncOpenAI(api_key=api_key, base_url=base_url)
         self.model_name = model_name
+        self.response_store = response_store
         # 注册工具箱
         self.tools ={
 
@@ -57,6 +59,15 @@ Final Answer: {"is_attack": true/false, "confidence": 0-100, "attack_type": "具
 
                 agent_reply = response.choices[0].message.content.strip()
                 logger.info(f"[Agent] Step {step+1} 思考结果:\n{agent_reply}\n")
+
+                if self.response_store is not None:
+                    await self.response_store.add_event(
+                        build_response_event(
+                            trace_id=log_data.get("trace_id", ""),
+                            step=step + 1,
+                            response_text=agent_reply,
+                        )
+                    )
                 context += f"\n{agent_reply}\n"
 
                 # 判断是否得到最终结论 
